@@ -1,12 +1,12 @@
-// Display:		  NEC (640x480)
+// Display:	NEC (640x480)
 // Input CLK: 	50MHz
-// Work CLK: 	  25MHz (ICLK:2)
-// FPGA:			  Cyclone IV
-// Board:		    E10
-// Author:		  Pavel Khomich
+// Work CLK: 	25MHz (ICLK:2)
+// FPGA:	Cyclone IV
+// Board:	E10
+// Author:	Pavel Khomich
 module main(
-	input	logic			_clk, _rst,
-	input logic			up, down,
+	input logic		_clk, _rst,
+	input logic		up, down,
 	output logic		hsync, vsync,
 	output logic		active,
 	output logic		r, g, b			
@@ -16,8 +16,8 @@ module main(
 	logic rst;
 	assign rst = ~_rst;
 	always_ff @(posedge _clk, posedge rst) 
-		if (rst)		clk <= '0;
-		else			  clk <= ~clk;
+		if (rst)	clk <= '0;
+		else		clk <= ~clk;
 	// ----- CONSTANTS & VARIABLES --------
 	logic [9:0] hp, vp;
 	logic frame;
@@ -62,30 +62,30 @@ module main(
 	// Vertical Timing Constans
 	localparam AREA_V 	= 480;
 	localparam FP_V		= 10;
-	localparam SYNC_V		= 2;
+	localparam SYNC_V	= 2;
 	localparam BP_V		= 33;
 	localparam TIMING_V = AREA_V + FP_V + SYNC_V + BP_V;
 	// Control Timing Constants
-	localparam HSYNC_START = AREA_H + FP_H;
-	localparam HSYNC_END   = AREA_H + FP_H + SYNC_H - 1;
-	localparam MAX_H 	  = TIMING_H - 1;
+	localparam HSYNC_START 	= AREA_H + FP_H;
+	localparam HSYNC_END   	= AREA_H + FP_H + SYNC_H - 1;
+	localparam MAX_H 	= TIMING_H - 1;
 
-	localparam VSYNC_START = AREA_V + FP_V;
-	localparam VSYNC_END   = AREA_V + FP_V + SYNC_V - 1;
-	localparam MAX_V       = TIMING_V - 1;
+	localparam VSYNC_START 	= AREA_V + FP_V;
+	localparam VSYNC_END   	= AREA_V + FP_V + SYNC_V - 1;
+	localparam MAX_V       	= TIMING_V - 1;
 
 	// -------------- VGA LOGIC -----------
 	// 			Horizontal Position
 	always_ff @(posedge clk, posedge rst)
-		if (rst)				hp <= '0;
+		if (rst)		hp <= '0;
 		else if (hp == MAX_H)	hp <= '0;
-		else					hp <= hp + 1'b1;
+		else			hp <= hp + 1'b1;
 	// 			Vertical Position
 	always_ff @(posedge clk, posedge rst)
-		if (rst)				vp <= '0;
+		if (rst)		vp <= '0;
 		else if (hp == MAX_H) begin
 			if (vp == MAX_V)	vp <= '0;
-			else 				vp <= vp + 1'b1;
+			else 			vp <= vp + 1'b1;
 		end
 	// 			SYNC Signals Generator
 	always_comb begin
@@ -112,13 +112,13 @@ module main(
 	logic [4:0] ship_y;
 	logic [5:0] ship_x;
 	always_ff @(posedge frame8, posedge rst)
-		if (rst) 										ship_y <= '0;
-		else if (~up && (ship_y != '0))			ship_y <= ship_y - 6'b1;
+		if (rst) 				ship_y <= '0;
+		else if (~up && (ship_y != '0))		ship_y <= ship_y - 6'b1;
 		else if (~down && (ship_y != 6'd29))	ship_y <= ship_y + 6'b1;
-		else												ship_y <= ship_y; // Inverse - FPGA Board Buttons 
+		else					ship_y <= ship_y; // Inverse - FPGA Board Buttons 
 	always_ff @(posedge frame, posedge rst)
-		if (rst) ship_x <= 7'd3;
-		else     ship_x <= ship_x;
+		if (rst) 				ship_x <= 7'd3;
+		else     				ship_x <= ship_x;
 	
 	rom_ship rom_ship(.y(ship_sprite_y), .bits(ship_sprite_line));
 	
